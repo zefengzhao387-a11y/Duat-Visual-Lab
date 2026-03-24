@@ -16,3 +16,73 @@ body {
 body {
   @apply antialiased text-neutral-100;
 }
+
+a:focus-visible,
+button:focus-visible {
+  @apply outline outline-2 outline-offset-2 outline-amber-700/60;
+}
+
+/* 站点页轻微颗粒与卡片悬停 */
+.duat-site-grain {
+  background-image: radial-gradient(
+      ellipse 120% 80% at 50% -20%,
+      rgba(120, 53, 15, 0.12),
+      transparent 55%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.015) 2px,
+      rgba(255, 255, 255, 0.015) 3px
+    );
+}
+
+.duat-card {
+  @apply bg-black/20 transition-colors duration-500;
+}
+
+.duat-card:hover {
+  @apply border-amber-950/40 bg-amber-950/10;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes duat-title-breathe {
+    0%,
+    100% {
+      letter-spacing: 0.32em;
+      opacity: 0.92;
+    }
+    50% {
+      letter-spacing: 0.42em;
+      opacity: 1;
+    }
+  }
+
+  @keyframes duat-pulse-glyph {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.85;
+    }
+    50% {
+      transform: scale(1.06);
+      opacity: 1;
+    }
+  }
+
+  .duat-title-breathe {
+    animation: duat-title-breathe 10s ease-in-out infinite;
+  }
+
+  .duat-pulse-glyph {
+    animation: duat-pulse-glyph 2.4s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duat-title-breathe,
+  .duat-pulse-glyph {
+    animation: none;
+  }
+}

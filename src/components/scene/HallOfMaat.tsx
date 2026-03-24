@@ -1,17 +1,19 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Suspense, useLayoutEffect, useRef } from "react";
+import { Environment } from "@react-three/drei";
+import { Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import * as THREE from "three";
 import { NoToneMapping } from "three";
-import { useBalanceStore } from "@/lib/store";
+import { useDuatStore } from "@/lib/store";
 import { Scales } from "./Scales";
 import { Effects } from "./Effects";
+import { BackgroundHall } from "./BackgroundHall";
 
 function BalancePlane() {
   const group = useRef<THREE.Group>(null);
   const { camera } = useThree();
-  const setBalance = useBalanceStore((s) => s.setBalance);
+  const setPointer = useDuatStore((s) => s.setPointer);
 
   useFrame(() => {
     const g = group.current;
@@ -27,7 +29,7 @@ function BalancePlane() {
         onPointerMove={(e) => {
           const u = e.uv?.x ?? 0.5;
           const x = (1 - u) * 2 - 1;
-          setBalance(Math.max(-1, Math.min(1, x)));
+          setPointer(x);
         }}
       >
         <planeGeometry args={[28, 20]} />
@@ -45,6 +47,8 @@ function BalancePlane() {
 function KeyLight() {
   const ref = useRef<THREE.SpotLight>(null);
   const { scene } = useThree();
+  const quality = useDuatStore((s) => s.prefs.quality);
+  const shadowSize = quality === "low" ? 1024 : 2048;
 
   useLayoutEffect(() => {
     const L = ref.current;
@@ -67,29 +71,42 @@ function KeyLight() {
       color="#ffd6a8"
       distance={40}
       decay={1.5}
-      shadow-mapSize={[2048, 2048]}
+      shadow-mapSize={[shadowSize, shadowSize]}
       shadow-bias={-0.00015}
     />
   );
 }
 
 function Scene() {
-  const balance = useBalanceStore((s) => s.balance);
+  const balance = useDuatStore((s) => s.balance);
 
   return (
     <>
       <color attach="background" args={["#000000"]} />
-      <fog attach="fog" args={["#030204", 14, 52]} />
+      <fog attach="fog" args={["#030204", 16, 58]} />
 
-      <ambientLight intensity={0.07} color="#1c2230" />
+      <ambientLight intensity={0.075} color="#1c2230" />
       <KeyLight />
       <pointLight
         position={[0, -3.1, 0.8]}
-        intensity={2.4}
-        distance={16}
+        intensity={2.5}
+        distance={17}
         decay={2}
         color="#4a0606"
       />
+      <pointLight
+        position={[-5.5, 2.2, 2]}
+        intensity={0.35}
+        distance={20}
+        decay={2}
+        color="#1a2040"
+      />
+
+      <Suspense fallback={null}>
+        <Environment preset="city" environmentIntensity={0.11} />
+      </Suspense>
+
+      <BackgroundHall />
 
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
@@ -98,9 +115,10 @@ function Scene() {
       >
         <planeGeometry args={[96, 96]} />
         <meshStandardMaterial
-          color="#060606"
-          roughness={0.94}
-          metalness={0.12}
+          color="#050505"
+          roughness={0.88}
+          metalness={0.22}
+          envMapIntensity={0.35}
         />
       </mesh>
 
@@ -112,17 +130,34 @@ function Scene() {
 }
 
 export function HallOfMaat() {
+  const quality = useDuatStore((s) => s.prefs.quality);
+  const dpr =
+    quality === "low"
+      ? ([1, 1] as [number, number])
+      : quality === "high"
+        ? ([1, 2.25] as [number, number])
+        : ([1, 2] as [number, number]);
+
+  useEffect(() => {
+    return () => {
+      useDuatStore.getState().setSceneReady(false);
+    };
+  }, []);
+
   return (
     <div className="h-full w-full touch-none">
       <Canvas
         shadows
-        dpr={[1, 2]}
+        dpr={dpr}
         gl={{
-          antialias: true,
+          antialias: quality !== "low",
           toneMapping: NoToneMapping,
           outputColorSpace: THREE.SRGBColorSpace,
         }}
-        camera={{ position: [0, 2.1, 7.8], fov: 40, near: 0.1, far: 90 }}
+        camera={{ position: [0, 2.1, 7.8], fov: 40, near: 0.1, far: 96 }}
+        onCreated={() => {
+          useDuatStore.getState().setSceneReady(true);
+        }}
       >
         <Suspense fallback={null}>
           <Scene />

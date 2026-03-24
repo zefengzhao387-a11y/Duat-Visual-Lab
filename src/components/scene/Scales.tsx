@@ -29,21 +29,25 @@ export function Scales({ balance }: ScalesProps) {
     if (rightPan.current) rightPan.current.rotation.z = -a;
   });
 
-  const beamMat = (
+  const stoneMat = (
     <meshStandardMaterial
       color="#2a2418"
-      metalness={0.65}
-      roughness={0.35}
-      envMapIntensity={0.4}
+      metalness={0.68}
+      roughness={0.32}
+      envMapIntensity={0.55}
     />
   );
+
   const goldMat = (
-    <meshStandardMaterial
+    <meshPhysicalMaterial
       color="#c9a227"
       emissive="#f0d060"
-      emissiveIntensity={0.85}
-      metalness={0.9}
-      roughness={0.22}
+      emissiveIntensity={0.82}
+      metalness={0.92}
+      roughness={0.18}
+      clearcoat={0.85}
+      clearcoatRoughness={0.18}
+      envMapIntensity={1.1}
     />
   );
 
@@ -51,11 +55,11 @@ export function Scales({ balance }: ScalesProps) {
     <group position={[0, -0.35, 0]}>
       <mesh castShadow receiveShadow position={[0, 0.12, 0]}>
         <cylinderGeometry args={[0.55, 0.72, 0.22, 48]} />
-        {beamMat}
+        {stoneMat}
       </mesh>
       <mesh castShadow position={[0, 0.95, 0]}>
         <cylinderGeometry args={[0.08, 0.1, 1.35, 24]} />
-        {beamMat}
+        {stoneMat}
       </mesh>
       <group ref={beamGroup} position={[0, 1.62, 0]}>
         <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
@@ -69,7 +73,7 @@ export function Scales({ balance }: ScalesProps) {
           </mesh>
           <mesh position={[0, -0.82, 0]} castShadow>
             <cylinderGeometry args={[0.42, 0.38, 0.06, 32]} />
-            {beamMat}
+            {stoneMat}
           </mesh>
           <group position={[0, -0.82, 0]}>
             <Feather />
@@ -82,7 +86,7 @@ export function Scales({ balance }: ScalesProps) {
           </mesh>
           <mesh position={[0, -0.82, 0]} castShadow>
             <cylinderGeometry args={[0.42, 0.38, 0.06, 32]} />
-            {beamMat}
+            {stoneMat}
           </mesh>
           <group position={[0, -0.82, 0]}>
             <Soul />

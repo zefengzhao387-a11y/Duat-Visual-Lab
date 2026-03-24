@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cinzel, Geist_Mono } from "next/font/google";
+import { Cinzel, Geist_Mono, Noto_Serif_SC } from "next/font/google";
 import "./globals.css";
 
 const cinzel = Cinzel({
@@ -14,9 +14,19 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+const notoSc = Noto_Serif_SC({
+  weight: ["400", "600"],
+  subsets: ["latin"],
+  variable: "--font-noto-sc",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Duat Visual Lab",
-  description: "Hall of Maat — balance visualization",
+  title: {
+    default: "Duat Visual Lab — 杜阿特视觉实验室",
+    template: "%s · Duat Visual Lab",
+  },
+  description: "Hall of Maat — 玛阿特之厅 · 杜阿特视觉实验室",
 };
 
 export default function RootLayout({
@@ -25,7 +35,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${cinzel.variable} ${geistMono.variable}`}>
+    <html
+      lang="zh-CN"
+      className={`${cinzel.variable} ${geistMono.variable} ${notoSc.variable}`}
+    >
       <body className={cinzel.className}>{children}</body>
     </html>
   );
